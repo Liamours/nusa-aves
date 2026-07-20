@@ -6,6 +6,12 @@ v2.4 transfer learning unless noted. Deployed pick is `CustomClassifier.tflite`
 in this folder (Model B, see [experiments/](experiments/)); everything else
 stays in the research working copy, not shipped in this repo.
 
+`CustomClassifier.tflite` (50MB) is tracked via [Git LFS](https://git-lfs.com/)
+in this repo — `git lfs install` once per machine, then clone/pull as normal.
+If you just need the weights without cloning (or you're out of LFS bandwidth),
+grab them directly from the [model-b-v1 release](https://github.com/Liamours/nusa-aves/releases/tag/model-b-v1) —
+regular GitHub file hosting, no LFS quota involved.
+
 ## Species classifiers (BirdNET v2.4 fine-tune)
 
 Two checkpoint flavors exist per training run:
