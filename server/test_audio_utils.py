@@ -1,12 +1,19 @@
 import numpy as np
 
-from audio_utils import pad_or_crop, top_k_predictions
+from audio_utils import pad_or_crop, sigmoid, top_k_predictions
 
 
 def test_pad_or_crop():
     assert list(pad_or_crop(np.array([1.0, 2.0]), 5)) == [1.0, 2.0, 0.0, 0.0, 0.0]
     assert list(pad_or_crop(np.array([1.0, 2.0, 3.0, 4.0]), 2)) == [1.0, 2.0]
     assert list(pad_or_crop(np.array([1.0, 2.0]), 2)) == [1.0, 2.0]
+
+
+def test_sigmoid():
+    result = sigmoid(np.array([0.0, 100.0, -100.0]))
+    assert abs(result[0] - 0.5) < 1e-9
+    assert result[1] > 0.999
+    assert result[2] < 0.001
 
 
 def test_top_k_predictions():
@@ -21,5 +28,6 @@ def test_top_k_predictions():
 
 if __name__ == "__main__":
     test_pad_or_crop()
+    test_sigmoid()
     test_top_k_predictions()
     print("ok")

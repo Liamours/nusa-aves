@@ -7,6 +7,10 @@ def pad_or_crop(audio: np.ndarray, target_length: int) -> np.ndarray:
     return audio[:target_length]
 
 
+def sigmoid(logits: np.ndarray) -> np.ndarray:
+    return 1 / (1 + np.exp(-logits))
+
+
 def top_k_predictions(scores: np.ndarray, labels: list[str], k: int) -> list[dict]:
     top = np.argsort(scores)[::-1][:k]
     return [{"species": labels[i], "confidence": float(scores[i])} for i in top]

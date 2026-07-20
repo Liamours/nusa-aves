@@ -1,17 +1,22 @@
 """Loads ../model/CustomClassifier.tflite and runs inference.
 
-Preprocessing matches app-mobile's AudioProcessor: mono, 48kHz, padded/
-cropped to 3s. Raw model output is pre-sigmoid logits (unbounded, can be
-negative — verified empirically, not documented anywhere), so a sigmoid
-is applied here to get an actual 0-1 confidence. BirdNET custom classifiers
-are multi-label (independent per-class sigmoid), not softmax, so top-k
-confidences don't sum to 1 and that's expected.
+Pipeline: preprocess -> inference -> postprocess. There's no separate
+feature-extraction step because this tflite graph is BirdNET's embedding
+extractor and the custom classifier head merged into one model — it takes
+raw audio in and gives class scores out.
+
+Preprocessing (mono, 48kHz, padded/cropped to 3s) matches app-mobile's
+AudioProcessor. Raw model output is pre-sigmoid logits (unbounded, can be
+negative — verified empirically, not documented anywhere), so postprocess
+applies a sigmoid to get an actual 0-1 confidence. BirdNET custom
+classifiers are multi-label (independent per-class sigmoid), not softmax,
+so top-k confidences don't sum to 1 and that's expected.
 """
 import librosa
 import numpy as np
 import tensorflow as tf
 
-from audio_utils import pad_or_crop, top_k_predictions
+from audio_utils import pad_or_crop, sigmoid, top_k_predictions
 
 MODEL_DIR = "../model"
 SAMPLE_RATE = 48000
@@ -28,11 +33,19 @@ class Classifier:
         with open(f"{model_dir}/CustomClassifier_Labels.txt", encoding="utf-8") as f:
             self.labels = [line.strip() for line in f if line.strip()]
 
-    def predict_file(self, audio_path: str, top_k: int = 5) -> list[dict]:
+    def preprocess(self, audio_path: str) -> np.ndarray:
         audio, _ = librosa.load(audio_path, sr=SAMPLE_RATE, mono=True)
-        audio = pad_or_crop(audio, TARGET_LENGTH).astype(np.float32)
-        self.interpreter.set_tensor(self.input_detail["index"], audio.reshape(self.input_detail["shape"]))
+        return pad_or_crop(audio, TARGET_LENGTH).astype(np.float32)
+
+    def run_inference(self, features: np.ndarray) -> np.ndarray:
+        self.interpreter.set_tensor(self.input_detail["index"], features.reshape(self.input_detail["shape"]))
         self.interpreter.invoke()
-        logits = self.interpreter.get_tensor(self.output_detail["index"]).reshape(-1)
-        scores = 1 / (1 + np.exp(-logits))
-        return top_k_predictions(scores, self.labels, top_k)
+        return self.interpreter.get_tensor(self.output_detail["index"]).reshape(-1)
+
+    def postprocess(self, logits: np.ndarray, top_k: int) -> list[dict]:
+        return top_k_predictions(sigmoid(logits), self.labels, top_k)
+
+    def predict_file(self, audio_path: str, top_k: int = 5) -> list[dict]:
+        features = self.preprocess(audio_path)
+        logits = self.run_inference(features)
+        return self.postprocess(logits, top_k)
