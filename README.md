@@ -28,9 +28,23 @@ own audio and running without Docker.
 
 ## Results
 
-Fine-tuned on 12,511 recordings across 219 endemic and endangered species
-from Indonesia, Malaysia, and Borneo. Macro F1 0.554 (accuracy 0.72) on the
-full 219-species test set; Macro F1 0.419 (accuracy 0.661) on the
-endangered/endemic subset — a 44.1% improvement over the unmodified
-baseline. Field-validated at Bandung Zoo and Zoo Negara Malaysia. Published
-as first author at ICITACEE 2025 (IEEE Xplore).
+Two research phases feed this app — kept separate here since they have
+different publication status:
+
+- **Published** (first author, ICITACEE 2025, IEEE Xplore): BirdNET
+  fine-tuned on **200** endemic/endangered species from Indonesia,
+  Malaysia, and Borneo. Accuracy 76.28%, weighted F1 80.29%, macro F1
+  65.90% on the 200-species test set.
+- **Unpublished continuation** (**219** species, adds MixIT source
+  separation to handle field noise; manuscript in peer review at PeerJ,
+  led by a collaborator — not first-authored here): macro F1 improves from
+  0.291 to 0.419 (+44.1%) on the endemic/endangered subset once
+  MixIT-separated audio is used.
+
+The model shipped in this repo (`model/CustomClassifier.tflite`) is the
+**219-species** version — that's a statement about what's deployed, not
+about what's published.
+
+Informally field-tested at Bandung Zoo and Zoo Negara Malaysia (mixed
+results in high-noise, uncontrolled conditions — not a formal evaluation,
+and part of what motivated the MixIT work above).
