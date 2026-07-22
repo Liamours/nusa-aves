@@ -4,7 +4,7 @@ __pycache__/
 .venv/
 venv/
 
-# Android / Kotlin Multiplatform (app-mobile)
+# Android build tooling
 .gradle/
 .idea/
 build/
