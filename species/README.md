@@ -5,15 +5,21 @@
   as a negative/noise class in some checkpoint variants — see
   [../model/CATALOG.md](../model/CATALOG.md)). Columns: scientific name,
   common name, IUCN-style endangerment category, and endemic-to-Malaysia /
-  endemic-to-Indonesia flags. `-` means assessed and not applicable (not
-  threatened / not endemic there); `not in reference data` (7 of 219 rows)
-  means the team's endangerment/endemic reference table didn't cover that
-  species — left blank rather than guessed. 18 species carry a threat
-  category (12 Vulnerable, 5 Endangered, 1 Critically Endangered — updated
-  2026-07-20: `Otus alfredi` corrected from Endangered to Vulnerable after
-  cross-checking Wikipedia, Avibase, and Birds of the World, which all
-  currently agree on Vulnerable); 25 are flagged endemic to Malaysia or
-  Indonesia.
+  endemic-to-Indonesia flags. `endangerment_category` uses real IUCN
+  category names, including `Least Concern` (194 of 219 rows, updated
+  2026-07-23 — this used to be a bare `-`, which conflated "assessed and
+  confirmed not threatened" with "we have no data"; it's genuinely Least
+  Concern, cross-referenced against official IUCN Red List exports, not a
+  placeholder). The two endemic columns still use `-` for "assessed and
+  not endemic there" (a real result, not missing data) since there's no
+  equivalent ambiguity for a plain yes/no flag. `not in reference data` (7
+  of 219 rows, all three columns) means the team's reference table didn't
+  cover that species at all — left blank rather than guessed. 18 species
+  carry a threat category (12 Vulnerable, 5 Endangered, 1 Critically
+  Endangered — updated 2026-07-20: `Otus alfredi` corrected from
+  Endangered to Vulnerable after cross-checking Wikipedia, Avibase, and
+  Birds of the World, which all currently agree on Vulnerable); 25 are
+  flagged endemic to Malaysia or Indonesia.
 - **[detail_list-endangered_endemic.xlsx](detail_list-endangered_endemic.xlsx)** —
   a curated highlight of the 29 most notable endangered/endemic species from
   that list, used for the proposal's headline numbers.
