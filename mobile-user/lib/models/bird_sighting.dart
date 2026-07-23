@@ -77,6 +77,46 @@ class BirdSighting {
       audioFilePath: audioFilePath ?? this.audioFilePath,
     );
   }
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'name': name,
+        'scientificName': scientificName,
+        'imageUrl': imageUrl,
+        'accuracy': accuracy,
+        'accuracyValue': accuracyValue,
+        'recordedAt': recordedAt.millisecondsSinceEpoch,
+        'location': location,
+        'audioDuration': audioDuration,
+        'isAudioOnly': isAudioOnly ? 1 : 0,
+        'category': category,
+        'overview': overview,
+        'isEndemic': isEndemic ? 1 : 0,
+        'endangeredStatus': endangeredStatus,
+        'temperature': temperature,
+        'weatherCondition': weatherCondition,
+        'audioFilePath': audioFilePath,
+      };
+
+  factory BirdSighting.fromMap(Map<String, Object?> map) => BirdSighting(
+        id: map['id'] as String,
+        name: map['name'] as String,
+        scientificName: map['scientificName'] as String,
+        imageUrl: map['imageUrl'] as String,
+        accuracy: map['accuracy'] as String,
+        accuracyValue: map['accuracyValue'] as int,
+        recordedAt: DateTime.fromMillisecondsSinceEpoch(map['recordedAt'] as int),
+        location: map['location'] as String,
+        audioDuration: map['audioDuration'] as String,
+        isAudioOnly: (map['isAudioOnly'] as int) == 1,
+        category: map['category'] as String,
+        overview: map['overview'] as String,
+        isEndemic: (map['isEndemic'] as int) == 1,
+        endangeredStatus: map['endangeredStatus'] as String,
+        temperature: map['temperature'] as String,
+        weatherCondition: map['weatherCondition'] as String,
+        audioFilePath: map['audioFilePath'] as String?,
+      );
 }
 
 final DateTime _now = DateTime.now();

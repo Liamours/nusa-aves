@@ -29,11 +29,12 @@
   219 rows extracted from `classification_dict.dart` in a prior reference
   app ("birdApp" — not part of this repo, not published anywhere public
   as of this writing); the remaining 19 filled in by manual research
-  against Wikipedia/Avibase/Birds of the World/eBird (`data_source: manual
-  research`), except 2 left as `not available` — see below. That source
-  app's own README claims an MIT license but it has no actual LICENSE
-  file — worth confirming with its author before treating the 200-species
-  portion as freely reusable.
+  against Wikipedia/Avibase/Birds of the World/eBird, including
+  `Chrysocolaptes lucidus` and `Pitta guajana` — see below
+  (`data_source: manual research`). That source app's own README claims
+  an MIT license but it has no actual LICENSE file — worth confirming
+  with its author before treating the 200-species portion as freely
+  reusable.
 
   Every `image_url` was link-checked (2026-07-20). 13 were dead or rejected
   by Wikimedia's current thumbnail-size policy (pre-existing issues in the
@@ -44,25 +45,24 @@
   during the check means a small number of untouched rows weren't
   re-verified with full certainty.
 
-  **Two rows intentionally left blank — real taxonomic ambiguity, not a
-  research gap:**
-  - `Chrysocolaptes lucidus` — under current taxonomy (IOC, Avibase) this
-    binomial refers strictly to the Philippines-endemic "Buff-spotted
-    Flameback," unrelated to Indonesia/Malaysia/Borneo. The
-    Sumatra/Java/Borneo population this project actually means is now
-    classified as *Chrysocolaptes guttacristatus* ("Greater Flameback"),
-    which already exists as its own separate label in
-    `../model/CustomClassifier_Labels.txt`. Needs a decision on whether
-    this target-species entry is a legacy/duplicate label before writing
-    a description under it.
-  - `Pitta guajana` — after a 2010 split this binomial now refers
-    specifically to the Javan Banded Pitta (Java/Bali only). But the
-    original training data folder names reference "ssp. irenae," the
-    Malay Peninsula/Sumatra subspecies — which under current taxonomy is
-    a different, already-separately-labeled species, *Hydrornis irena*
-    ("Malayan Banded Pitta"). Whether this target-species entry means the
-    Javan species or is a legacy label for the Malayan one needs checking
-    against the original training metadata before writing a description.
+  **Two species that map to a name already used elsewhere in this
+  project's taxonomy:**
+  - `Chrysocolaptes lucidus` — same species as *Chrysocolaptes
+    guttacristatus* ("Greater Flameback"), under the older, broader
+    taxonomy that once covered the whole complex. That name isn't one of
+    the 219 target species itself (only in the raw 6,744-label BirdNET
+    space), so this row carries freshly researched, sourced content about
+    the species directly.
+  - `Pitta guajana` — same species as *Hydrornis irena* ("Malayan Banded
+    Pitta," already one of the 219 target species) — the original
+    training data folder names for this label reference "ssp. irenae,"
+    the exact subspecies later split out as *Hydrornis irena*. This row
+    reuses that species' content.
+
+  Neither inference was checked against the full original training
+  audio/metadata (inaccessible when this was resolved) — only against
+  one filename each and general taxonomic history. Treat both rows as
+  "best guess, clearly labeled," not verified fact.
 
 The deployed model's raw output space is larger still (6,744 labels — the
 219 custom species plus BirdNET's global species set); see
