@@ -25,6 +25,8 @@ own audio and running without Docker.
 - **[species/](species/)** — the 219 species the model recognizes, with
   endangerment and endemic-region status.
 - **[server/](server/)** — the inference CLI.
+- **[mobile-user/](mobile-user/)** — a Flutter app that runs the same
+  classifier fully offline, on-device.
 
 ## Results
 
