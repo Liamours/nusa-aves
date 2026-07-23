@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: build image
+        run: docker build -f server/Dockerfile -t nusa-aves:${{ github.ref_name }} .
+
+      - name: smoke test before publishing
+        run: |
+          docker run --rm nusa-aves:${{ github.ref_name }} samples/black_hornbill.wav
+
+      - name: log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: push image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/nusa-aves
+          IMAGE=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
+          docker tag nusa-aves:${{ github.ref_name }} "$IMAGE:${{ github.ref_name }}"
+          docker tag nusa-aves:${{ github.ref_name }} "$IMAGE:latest"
+          docker push "$IMAGE:${{ github.ref_name }}"
+          docker push "$IMAGE:latest"
+
+      - name: create GitHub release
+        run: gh release create ${{ github.ref_name }} --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

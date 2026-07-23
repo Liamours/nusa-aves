@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["server/**", "model/**", "species/**", ".github/workflows/ci.yml"]
+  pull_request:
+    paths: ["server/**", "model/**", "species/**", ".github/workflows/ci.yml"]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: python test_audio_utils.py
+      - run: python test_config.py
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - run: docker build -f server/Dockerfile -t nusa-aves .
+      - name: smoke test against bundled samples
+        run: |
+          docker run --rm nusa-aves samples/black_hornbill.wav | tee /tmp/out.json
+          python3 -c "
+          import json
+          preds = json.load(open('/tmp/out.json'))
+          assert preds[0]['species'].startswith('Anthracoceros malayanus'), preds
+          assert preds[0]['confidence'] > 0.9, preds
+          print('smoke test passed')
+          "

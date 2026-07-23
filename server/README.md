@@ -14,15 +14,26 @@ predictions. Pipeline is `preprocess -> inference -> postprocess -> output`:
 - **output** (`cli.py`) — print as JSON.
 
 Uses `../model/CustomClassifier.tflite` (the same model bundled offline in
-`../app-mobile`). Preprocessing (48kHz mono, 3s clips) matches the mobile
-app's `AudioProcessor`. Output confidence
-is sigmoid-applied to the model's raw logits (verified empirically — the raw
-tflite output is unbounded, not a 0-1 probability). The classifier is
-multi-label (independent per-class sigmoid, not softmax), so top-k
-confidences don't sum to 1 — and a species can legitimately appear twice in
-the same top-k list with two different confidence values, since the
-underlying label file has a couple of species listed as two separate output
-classes. Both are real, this isn't a bug.
+`../mobile-user`, which mirrors this pipeline in Dart — see
+`mobile-user/lib/services/audio_utils.dart` and `bird_classifier.dart`,
+same constants, same preprocess/inference/postprocess split). Output
+confidence is sigmoid-applied to the model's raw logits (verified
+empirically — the raw tflite output is unbounded, not a 0-1 probability).
+The classifier is multi-label (independent per-class sigmoid, not
+softmax), so top-k confidences don't sum to 1 — and a species can
+legitimately appear twice in the same top-k list with two different
+confidence values, since the underlying label file has a couple of
+species listed as two separate output classes. Both are real, this isn't
+a bug.
+
+## Environment variables
+
+| Variable | Default | |
+|---|---|---|
+| `NUSA_LOG_LEVEL` | `INFO` | set to `DEBUG` for per-step logs (model load, preprocessing, inference) |
+| `NUSA_MODEL_DIR` | `../model` | override if running from somewhere other than `server/` |
+
+`--version` prints the CLI version and exits.
 
 ## Docker (build from the repo root, not this folder)
 
@@ -54,8 +65,25 @@ pip install -r requirements.txt
 python cli.py <audio_file> [--top-k N]
 ```
 
+## Output
+
+A JSON array of `{"species": "<Scientific name>_<Common name>", "confidence": 0.0-1.0}`,
+highest confidence first. `confidence` is this model's own estimate, not a
+calibrated probability — treat >0.9 as a strong match, don't read too much
+into small differences between two 0.3-ish scores.
+
 ## Self-check (pure logic, no model or audio needed)
 
 ```
 python test_audio_utils.py
+python test_config.py
 ```
+
+## Troubleshooting
+
+- **`FileNotFoundError` on a Windows-style path that was never supposed to
+  exist** — see the `MSYS_NO_PATHCONV` note above.
+- **Traceback instead of a clean error** — shouldn't happen; the CLI
+  catches classification failures and exits with a one-line error message.
+  If you see a raw traceback, that's a bug worth reporting.
+- **Want to see what's happening step by step** — `NUSA_LOG_LEVEL=DEBUG`.
