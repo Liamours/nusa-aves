@@ -12,26 +12,32 @@ applies a sigmoid to get an actual 0-1 confidence. BirdNET custom
 classifiers are multi-label (independent per-class sigmoid), not softmax,
 so top-k confidences don't sum to 1 and that's expected.
 """
+import logging
+
 import librosa
 import numpy as np
 import tensorflow as tf
 
 from audio_utils import pad_or_crop, sigmoid, top_k_predictions
+from config import MODEL_DIR
 
-MODEL_DIR = "../model"
 SAMPLE_RATE = 48000
 CLIP_SECONDS = 3.0
 TARGET_LENGTH = int(SAMPLE_RATE * CLIP_SECONDS)
 
+logger = logging.getLogger(__name__)
+
 
 class Classifier:
     def __init__(self, model_dir: str = MODEL_DIR):
+        logger.debug("loading model from %s", model_dir)
         self.interpreter = tf.lite.Interpreter(model_path=f"{model_dir}/CustomClassifier.tflite")
         self.interpreter.allocate_tensors()
         self.input_detail = self.interpreter.get_input_details()[0]
         self.output_detail = self.interpreter.get_output_details()[0]
         with open(f"{model_dir}/CustomClassifier_Labels.txt", encoding="utf-8") as f:
             self.labels = [line.strip() for line in f if line.strip()]
+        logger.info("model loaded: %d labels", len(self.labels))
 
     def preprocess(self, audio_path: str) -> np.ndarray:
         audio, _ = librosa.load(audio_path, sr=SAMPLE_RATE, mono=True)
@@ -46,6 +52,9 @@ class Classifier:
         return top_k_predictions(sigmoid(logits), self.labels, top_k)
 
     def predict_file(self, audio_path: str, top_k: int = 5) -> list[dict]:
+        logger.debug("classifying %s (top_k=%d)", audio_path, top_k)
         features = self.preprocess(audio_path)
         logits = self.run_inference(features)
-        return self.postprocess(logits, top_k)
+        result = self.postprocess(logits, top_k)
+        logger.info("top prediction: %s (%.3f)", result[0]["species"], result[0]["confidence"])
+        return result

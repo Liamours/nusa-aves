@@ -20,12 +20,13 @@
 - **[species-descriptions.csv](species-descriptions.csv)** — common names
   (English/Indonesian/Malay), a short description, an image URL, and two
   reference links (Avibase, Birds of the World / eBird) per species. 200 of
-  219 rows extracted from `external/birdApp`'s `classification_dict.dart`
-  (the previous bird app); the remaining 19 filled in by manual research
+  219 rows extracted from `classification_dict.dart` in a prior reference
+  app ("birdApp" — not part of this repo, not published anywhere public
+  as of this writing); the remaining 19 filled in by manual research
   against Wikipedia/Avibase/Birds of the World/eBird (`data_source: manual
-  research`), except 2 left as `not available` — see below.
-  `external/birdApp`'s README claims an MIT license but the repo has no
-  actual LICENSE file — worth confirming before treating that 200-species
+  research`), except 2 left as `not available` — see below. That source
+  app's own README claims an MIT license but it has no actual LICENSE
+  file — worth confirming with its author before treating the 200-species
   portion as freely reusable.
 
   Every `image_url` was link-checked (2026-07-20). 13 were dead or rejected

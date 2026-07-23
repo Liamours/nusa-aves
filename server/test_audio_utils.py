@@ -26,8 +26,16 @@ def test_top_k_predictions():
     ]
 
 
+def test_top_k_predictions_k_larger_than_scores():
+    scores = np.array([0.2, 0.7])
+    labels = ["a", "b"]
+    result = top_k_predictions(scores, labels, k=5)
+    assert [r["species"] for r in result] == ["b", "a"]
+
+
 if __name__ == "__main__":
     test_pad_or_crop()
     test_sigmoid()
     test_top_k_predictions()
+    test_top_k_predictions_k_larger_than_scores()
     print("ok")

@@ -1,0 +1,11 @@
+# Only server/ (Dockerfile itself) and model/ (weights+labels) are ever
+# COPY'd. Everything else here just bloats the build context needlessly.
+.git
+.github
+mobile-user
+species
+model/CATALOG.md
+model/experiments
+DEVELOPMENT.md
+AGENTS.md
+README.md
