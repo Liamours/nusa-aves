@@ -1,0 +1,36 @@
+name: Mobile CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["mobile-user/**", ".github/workflows/mobile-ci.yml"]
+  pull_request:
+    paths: ["mobile-user/**", ".github/workflows/mobile-ci.yml"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile-user
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.6"
+          channel: "stable"
+
+      - run: flutter pub get
+
+      - run: flutter analyze
+
+      - run: flutter test
+
+      - run: flutter build apk --debug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nusa-aves-debug-apk
+          path: mobile-user/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error

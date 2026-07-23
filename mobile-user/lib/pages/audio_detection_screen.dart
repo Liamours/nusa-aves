@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../models/bird_sighting.dart';
+import '../services/bird_classifier.dart';
+import '../services/database_service.dart';
 
 enum _RecordingState { idle, recording, processing }
 
@@ -71,9 +73,18 @@ class _AudioDetectionScreenState extends State<AudioDetectionScreen>
     }
 
     final dir = await getApplicationDocumentsDirectory();
-    final path = '${dir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.m4a';
+    final path = '${dir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.wav';
 
-    await _recorder.start(const RecordConfig(), path: path);
+    // WAV/PCM16 mono at the model's native rate, so the classifier can read
+    // samples straight off disk with no decode step (see BirdClassifier.preprocess).
+    await _recorder.start(
+      const RecordConfig(
+        encoder: AudioEncoder.wav,
+        sampleRate: BirdClassifier.sampleRate,
+        numChannels: 1,
+      ),
+      path: path,
+    );
     if (!mounted) return;
 
     setState(() {
@@ -97,29 +108,67 @@ class _AudioDetectionScreenState extends State<AudioDetectionScreen>
       ..value = 1.0;
 
     final path = await _recorder.stop();
+    final recordedSeconds = _elapsedSeconds;
     if (!mounted) return;
 
     setState(() => _state = _RecordingState.processing);
 
-    // Belum ada model ML sungguhan, jadi hasil deteksi disimulasikan
-    // singkat sebelum menampilkan spesies pertama dari katalog.
-    await Future.delayed(const Duration(milliseconds: 900));
-    if (!mounted) return;
+    if (path == null) {
+      setState(() {
+        _state = _RecordingState.idle;
+        _elapsedSeconds = 0;
+        _errorMessage = 'Rekaman gagal disimpan, coba lagi.';
+      });
+      return;
+    }
 
-    final template = speciesCatalog.first;
-    final sighting = template.copyWith(
-      id: 'rec-${DateTime.now().millisecondsSinceEpoch}',
-      recordedAt: DateTime.now(),
-      audioFilePath: path,
-      isAudioOnly: true,
-    );
+    try {
+      final results = await BirdClassifier.instance.classifyFile(path, topK: 1);
+      if (!mounted) return;
 
-    setState(() {
-      _state = _RecordingState.idle;
-      _elapsedSeconds = 0;
-    });
+      final top = results.first;
+      final accuracyValue = (top.confidence * 100).round().clamp(0, 100);
+      final duration = _formatTimer(recordedSeconds);
 
-    widget.onSightingDetected?.call(sighting);
+      final sighting = BirdSighting(
+        id: 'rec-${DateTime.now().millisecondsSinceEpoch}',
+        name: top.species.commonName,
+        scientificName: top.scientificName,
+        imageUrl: top.species.imageUrl,
+        accuracy: '$accuracyValue%',
+        accuracyValue: accuracyValue,
+        recordedAt: DateTime.now(),
+        // Lokasi, suhu, dan cuaca butuh integrasi GPS/API cuaca terpisah —
+        // di luar cakupan backend model + database ini.
+        location: 'Lokasi tidak tersedia',
+        audioDuration: '$duration / ${_formatTimer(_maxSeconds)}',
+        isAudioOnly: true,
+        category: 'Burung',
+        overview: top.species.overview,
+        isEndemic: top.species.isEndemic,
+        endangeredStatus: top.species.endangeredStatus,
+        temperature: '-',
+        weatherCondition: '-',
+        audioFilePath: path,
+      );
+
+      await DatabaseService.instance.insertSighting(sighting);
+      if (!mounted) return;
+
+      setState(() {
+        _state = _RecordingState.idle;
+        _elapsedSeconds = 0;
+      });
+
+      widget.onSightingDetected?.call(sighting);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _state = _RecordingState.idle;
+        _elapsedSeconds = 0;
+        _errorMessage = 'Gagal menganalisis rekaman: $e';
+      });
+    }
   }
 
   String _formatTimer(int seconds) {
