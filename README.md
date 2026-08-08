@@ -1,5 +1,10 @@
 # NUSA Aves
 
+![NUSA Aves application](docs/figures/hero.jpg)
+
+NUSA Aves is one of 80 finalists selected from the proposal round of BRIN
+AIDeaNation 2026.
+
 A BirdNET-based classifier identifies endemic and endangered bird species
 in Indonesia and Malaysia from short audio clips. This repository packages
 the classifier as a self-contained CLI and as a Flutter mobile
