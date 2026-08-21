@@ -121,34 +121,38 @@ class BirdSighting {
 
 final DateTime _now = DateTime.now();
 
-/// Katalog spesies contoh (template). Karena app belum punya model ML,
-/// setiap rekaman baru selalu "terdeteksi" sebagai `speciesCatalog.first`.
+/// Katalog spesies contoh (template), diambil dari 4 baris nyata di
+/// assets/species/species-descriptions.csv (bukan data karangan) supaya
+/// nama, foto, dan status konservasinya konsisten dengan basis data
+/// 219 spesies yang dipakai SpeciesRepository. Karena app belum punya
+/// model ML, setiap rekaman baru selalu "terdeteksi" sebagai
+/// `speciesCatalog.first`.
 final List<BirdSighting> speciesCatalog = [
   BirdSighting(
     id: 'sp-1',
-    name: 'Jalak Bali',
-    scientificName: 'Leucopsar rothschildi',
+    name: 'Enggang Cula',
+    scientificName: 'Buceros rhinoceros',
     imageUrl:
-        'https://images.unsplash.com/photo-1544604423-f3908f519502?q=80&w=600&auto=format&fit=crop',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Buceros_rhinoceros_-Singapore_Zoo_-pair-8a.jpg/1920px-Buceros_rhinoceros_-Singapore_Zoo_-pair-8a.jpg',
     accuracy: '96%',
     accuracyValue: 96,
     recordedAt: _now,
     location: 'Taman Nasional Bali Barat',
     audioDuration: '0:14 / 0:30',
-    category: 'Burung Pengicau',
+    category: 'Burung Enggang',
     overview:
-        'Jalak Bali adalah burung endemik Pulau Bali dengan bulu putih bersih, ujung sayap dan ekor hitam, serta kulit biru di sekitar mata. Populasinya di alam liar sangat terbatas dan menjadikannya salah satu burung paling terancam punah di dunia.',
-    isEndemic: true,
-    endangeredStatus: 'Kritis',
+        'Rhinoceros Hornbill adalah enggang besar berbulu hitam mengilap dengan ekor putih berpita gelap, ditemukan di hutan dataran rendah hingga perbukitan Kalimantan, Sumatra, Jawa, dan Semenanjung Malaya. Paruhnya besar berwarna oranye terang dengan tanduk mencolok di atasnya.',
+    isEndemic: false,
+    endangeredStatus: 'Rentan',
     temperature: '29°C',
     weatherCondition: 'Cerah, Angin Sepoi',
   ),
   BirdSighting(
     id: 'sp-2',
-    name: 'Elang Jawa',
-    scientificName: 'Nisaetus bartelsi',
+    name: 'Elang-ular Bido',
+    scientificName: 'Spilornis cheela',
     imageUrl:
-        'https://images.unsplash.com/photo-1552728089-57bdde30beb3?q=80&w=600&auto=format&fit=crop',
+        'https://upload.wikimedia.org/wikipedia/commons/9/9f/Crested_Serpent-Eagle.jpg',
     accuracy: '91%',
     accuracyValue: 91,
     recordedAt: _now.subtract(const Duration(hours: 3)),
@@ -156,18 +160,18 @@ final List<BirdSighting> speciesCatalog = [
     audioDuration: '0:08 / 0:15',
     category: 'Burung Pemangsa',
     overview:
-        'Elang Jawa adalah burung pemangsa endemik Pulau Jawa yang menjadi salah satu ikon konservasi Indonesia. Dikenal dengan jambul khas di kepalanya, elang ini hidup di hutan hujan pegunungan dan populasinya terus menyusut akibat kerusakan habitat.',
-    isEndemic: true,
-    endangeredStatus: 'Genting',
+        'Elang-ular Bido adalah elang besar dengan jambul gelap berujung putih, wajah dan mata kuning telanjang, serta bagian bawah tubuh cokelat kemerahan berbintik putih. Ditemukan di kawasan berhutan lebat di seluruh Asia tropis dan masih cukup umum di habitat yang sesuai.',
+    isEndemic: false,
+    endangeredStatus: 'Risiko Rendah',
     temperature: '22°C',
     weatherCondition: 'Berawan, Tenang',
   ),
   BirdSighting(
     id: 'sp-3',
-    name: 'Merak Hijau',
-    scientificName: 'Pavo muticus',
+    name: 'Merak Kerdil',
+    scientificName: 'Polyplectron malacense',
     imageUrl:
-        'https://images.unsplash.com/photo-1552728089-57bdde30beb3?q=80&w=600&auto=format&fit=crop',
+        'https://upload.wikimedia.org/wikipedia/commons/3/33/BxZ_Polyplectron_malacense_00.jpg',
     accuracy: '78%',
     accuracyValue: 78,
     recordedAt: _now.subtract(const Duration(days: 1, hours: 2)),
@@ -175,7 +179,7 @@ final List<BirdSighting> speciesCatalog = [
     audioDuration: '0:10 / 0:25',
     category: 'Burung Darat',
     overview:
-        'Merak Hijau adalah salah satu burung terbesar dan paling mencolok di Asia Tenggara, dengan bulu hijau kebiruan mengilap dan bulu penutup ekor jantan yang panjang dan indah. Populasinya di Jawa terus menurun akibat perburuan dan hilangnya habitat.',
+        'Malayan Peacock-Pheasant adalah unggas berbulu cokelat kusam dengan bintik mata hijau-biru mengilap di bagian atas tubuh dan jambul mengarah ke depan. Hidup di hutan hujan dataran rendah Semenanjung Malaya, bergerak diam-diam, dan berstatus Terancam Punah.',
     isEndemic: false,
     endangeredStatus: 'Genting',
     temperature: '31°C',
@@ -183,10 +187,10 @@ final List<BirdSighting> speciesCatalog = [
   ),
   BirdSighting(
     id: 'sp-4',
-    name: 'Cucak Rawa',
-    scientificName: 'Pycnonotus zeylanicus',
+    name: 'Paok Hijau',
+    scientificName: 'Pitta sordida',
     imageUrl:
-        'https://images.unsplash.com/photo-1522858547137-f1dcec554f55?q=80&w=600&auto=format&fit=crop',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Hooded_Pitta%2C_crop.jpg/960px-Hooded_Pitta%2C_crop.jpg',
     accuracy: '65%',
     accuracyValue: 65,
     recordedAt: _now.subtract(const Duration(days: 2, hours: 5)),
@@ -194,9 +198,9 @@ final List<BirdSighting> speciesCatalog = [
     audioDuration: '0:04 / 0:12',
     category: 'Burung Pengicau',
     overview:
-        'Cucak Rawa dikenal karena suara kicaunya yang merdu dan bervariasi, membuatnya populer sebagai burung kicau peliharaan. Sayangnya, penangkapan liar besar-besaran membuat populasinya di alam menyusut drastis dalam beberapa dekade terakhir.',
+        'Hooded Pitta adalah burung hutan mencolok dengan tubuh hijau zamrid, kepala hitam, perut bawah merah delima, bercak sayap biru pucat, dan garis mahkota cokelat hangat. Hidup di berbagai habitat berhutan mulai dari hutan lebat hingga perkebunan.',
     isEndemic: false,
-    endangeredStatus: 'Kritis',
+    endangeredStatus: 'Risiko Rendah',
     temperature: '27°C',
     weatherCondition: 'Lembap, Berawan',
   ),

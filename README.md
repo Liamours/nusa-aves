@@ -70,14 +70,15 @@ author at ICITACEE 2025, IEEE Xplore.
 A separate line of work extends the species list to 219 and adds MixIT
 source separation to handle field noise. On a 29-species endemic and
 endangered subset, macro F1 rose from 29.11% to 41.93% once MixIT-separated
-audio was used. A collaborator leads this manuscript, currently in peer
-review at PeerJ; it does not list a NUSA Aves team member as first author.
+audio was used. A collaborator leads this manuscript, currently under
+revision at JOIV (Journal of Informatics and Visualization) and not yet
+accepted; it does not list a NUSA Aves team member as an author.
 
 The model shipped in this repository, `model/CustomClassifier.tflite`, is
 the 219-species version. The 219-species count describes what is deployed.
 Publication status for each phase is described above.
 
-The fine-tuned model was checked informally at Bandung Zoo and Zoo Negara
+The fine-tuned model was checked informally at Bandung Zoo and a zoo in Sarawak,
 Malaysia, under uncontrolled, high-noise field conditions. Results were
 mixed, and this motivated the MixIT work described above.
 

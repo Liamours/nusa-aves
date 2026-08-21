@@ -1,7 +1,17 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'pages/main_page.dart';
 
 void main() {
+  // ponytail: sqflite has no Windows/Linux backend; desktop runs need the
+  // ffi factory. Android/iOS keep the real sqflite plugin untouched.
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   runApp(const BirdFeApp());
 }
 
